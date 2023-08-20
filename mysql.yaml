@@ -1,0 +1,33 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+          - name: Set the root password
+            mysql_user:
+                    name: root
+                    password: Jatin@123
+                    login_unix_socket: /var/run/mysqld/mysqld.sock
+            tags: [ mysql, mysql-root ]
+
+          - name: Creates database for WordPress
+            mysql_db:
+                    name: wp
+                    state: present
+                    login_user: root
+                    login_password: Jatin@123
+            tags: [ mysql ]
+
+          - name: Create MySQL user for WordPress
+            mysql_user:
+                    name: wp_user
+                    password: Jatin@123
+                    priv: wp.*:ALL
+                    state: present
+                    login_user: root
+                    login_password: Jatin@123
+            tags: [ mysql ]
+
+          - name: Move php file
+            copy:
+              src: ./wp-config.php
+              dest: /var/www/html/wordpress/wp-config.php
